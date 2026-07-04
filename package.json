@@ -1,0 +1,17 @@
+{
+  "name": "publish-my-book-bot",
+  "version": "1.0.0",
+  "description": "Telegram lead capture bot for book publishing services",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "telegraf": "^4.16.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
