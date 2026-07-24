@@ -28,6 +28,15 @@ const platformButtons = [
 
 const yesNoButtons = [["Yes", "No"]];
 
+function buildMontageBrief(prompt) {
+  return {
+    prompt: prompt ||
+      "A person runs out of a bank, stops a taxi, gets in, and the taxi drives away.",
+    duration: "10 seconds",
+    format: "short cinematic video"
+  };
+}
+
 function beginQuote(ctx) {
   ctx.session = {
     step: "service",
@@ -59,6 +68,37 @@ bot.command("cancel", (ctx) => {
     "Your request has been cancelled. Send /start whenever you are ready.",
     Markup.removeKeyboard()
   );
+});
+
+bot.hears(/^\/openmontage(?:@\w+)?(?:\s+([\s\S]+))?$/i, async (ctx) => {
+  const prompt = ctx.match?.[1]?.trim();
+  const montage = buildMontageBrief(prompt);
+
+  const adminMessage = `
+🎬 NEW OPENMONTAGE REQUEST
+
+Prompt: ${montage.prompt}
+Duration: ${montage.duration}
+Format: ${montage.format}
+
+Client Name: ${ctx.from.first_name || "Unknown"}
+Telegram Username: ${ctx.from.username ? `@${ctx.from.username}` : "No username"}
+Telegram ID: ${ctx.from.id}
+`.trim();
+
+  try {
+    await ctx.telegram.sendMessage(ADMIN_CHAT_ID, adminMessage);
+
+    return ctx.reply(
+      `I received your OpenMontage request.\n\nPrompt: ${montage.prompt}\nDuration: ${montage.duration}\n\nI will review it and follow up soon.`,
+      Markup.removeKeyboard()
+    );
+  } catch (error) {
+    console.error(error);
+    return ctx.reply(
+      "There was a problem sending your OpenMontage request. Please try again later."
+    );
+  }
 });
 
 bot.on("text", async (ctx) => {
